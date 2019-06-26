@@ -1,5 +1,5 @@
-#include "input.h"
-#include "output.h"
+#include "../include/input.h"
+#include "../include/output.h"
 #include <cstring>
 
 void test_input() {

@@ -1,4 +1,4 @@
-#include "output.h"
+#include "../include/output.h"
 
 #include <cstring>
 #include <cassert>
