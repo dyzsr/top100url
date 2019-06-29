@@ -1,5 +1,9 @@
 bin/
 resources/
+._*/
+
+# vim swap
+*.swp
 
 # Prerequisites
 *.d

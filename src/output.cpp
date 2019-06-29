@@ -5,7 +5,7 @@
 #include <cctype>
 
 Output::Output(FILE *f, size_t buf_sz):
-	fpo(f), BUF_SZ(buf_sz), p(0)
+	fpo(f), BUF_SZ(buf_sz), ptr(0)
 {
 	assert(BUF_SZ > 0);
 	assert(fpo != NULL);
@@ -22,7 +22,7 @@ Output::~Output()
 void Output::putdb(const size_t v)
 {
 	char *p = (char *)(&v);
-	for (int i = 0; i < sizeof(size_t); i++) {
+	for (size_t i = 0; i < sizeof(size_t); i++) {
 		putc(p[i]);
 	}
 }
@@ -49,19 +49,19 @@ void Output::puts(const char *s)
 
 inline void Output::putc(char c)
 {
-	buf[p] = c;
-	p++;
-	if (p >= BUF_SZ) {
+	buf[ptr] = c;
+	ptr++;
+	if (ptr >= BUF_SZ) {
 		fwrite(buf, sizeof(char), BUF_SZ, fpo);
-		p = 0;
+		ptr = 0;
 	}
 }
 
 void Output::flush()
 {
-	if (p > 0) {
-		fwrite(buf, sizeof(char), p, fpo);
-		p = 0;
+	if (ptr > 0) {
+		fwrite(buf, sizeof(char), ptr, fpo);
+		ptr = 0;
 	}
 }
 

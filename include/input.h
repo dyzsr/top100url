@@ -8,6 +8,8 @@ class Input {
 		Input(FILE *f, size_t buf_sz);
 		~Input();
 
+		size_t getdb(size_t *dest);
+		size_t getd(size_t *dest);
 		size_t getsb(char *dest, size_t n);
 		size_t gets(char *dest, size_t n);
 
@@ -17,9 +19,9 @@ class Input {
 
 		size_t BUF_SZ;
 		size_t sz;
-		size_t p;
+		size_t ptr;
 
-		char getc();
+		int getc();
 };
 
 #endif

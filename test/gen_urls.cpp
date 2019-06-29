@@ -4,6 +4,8 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 
+#include "../include/output.h"
+
 const char *basic = "ooooooooooooooooooooooooooooooo";
 
 int main(int argc, char *argv[]) {
@@ -20,6 +22,8 @@ int main(int argc, char *argv[]) {
 	int length = strlen(basic);
 
 	char str[256];
+
+	Output out(stdout, (1 << 30));
 
 	for (int count = 0; count < max_count; count++) {
 		int i = 0;
@@ -43,8 +47,10 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		str[i] = 0;
-		printf("%s\n", str);
+		out.puts(str);
+//		printf("%s\n", str);
 	}
+	out.flush();
 
 	return 0;
 }

@@ -19,7 +19,7 @@ class Output {
 		char *buf;
 
 		size_t BUF_SZ;
-		size_t p;
+		size_t ptr;
 
 		void putc(char c);
 };

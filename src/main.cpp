@@ -9,5 +9,6 @@ const int MAX_URL_LEN = 65536;
 int main() {
 	Input in(stdin, 256);
 	Output out(stdout, 256);
+	// Partition
 	return 0;
 }
