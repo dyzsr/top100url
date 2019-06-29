@@ -138,8 +138,8 @@ void test_partition()
 	strcpy(cmd, "ls -a | grep "); strcat(cmd, dir); system(cmd);
 
 	size_t file_sz = (1 << 26);
-	Partition part(file_sz);
-	std::vector<FileInfo> files = part.partition(stdin, dir);
+	Partition partition(file_sz);
+	std::vector<FileInfo> files = partition(stdin, dir);
 
 	printf("number of files: %zu\n", files.size());
 	for (auto &info: files) {

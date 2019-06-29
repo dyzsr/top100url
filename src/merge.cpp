@@ -19,16 +19,25 @@ Merge::Merge()
 
 std::pair<size_t, size_t> Merge::operator() (const std::vector<Input *> &ins, Output *out)
 {
+//	fprintf(stderr, "zzz\n");
+
 	/*** Merge sort ***/
 	std::priority_queue<Item, std::vector<Item>, CMP> pq;
 
 	std::vector<char> iseof(ins.size(), 0);
 
+//	fprintf(stderr, "qqq\n");
+
 	for (size_t i = 0; i < ins.size(); i++) {
 		UrlCnt *urlcnt = new UrlCnt;
 		iseof[i] = getUrlCnt(urlcnt, ins[i]);
-		pq.push(std::make_pair(urlcnt, i));
+		if (!iseof[i]) {
+			pq.push(std::make_pair(urlcnt, i));
+//			fprintf(stderr, "%zu %zu %s\n", urlcnt->hash, urlcnt->cnt, urlcnt->url.c_str());
+		}
 	}
+
+//	fprintf(stderr, "aaa\n");
 
 	size_t tot_in = 0;
 	size_t tot_out = 0;
@@ -58,9 +67,12 @@ std::pair<size_t, size_t> Merge::operator() (const std::vector<Input *> &ins, Ou
 			// get a new item from files
 			urlcnt = new UrlCnt;
 			iseof[j] = getUrlCnt(urlcnt, ins[j]);
-			pq.push(std::make_pair(urlcnt, j));
+			if (!iseof[j])
+				pq.push(std::make_pair(urlcnt, j));
 		}
 	}
+
+//	fprintf(stderr, "bbb\n");
 
 	if (least != nullptr) {
 		putAndDelete(least, out);

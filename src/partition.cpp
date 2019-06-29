@@ -15,7 +15,7 @@ Partition::Partition(size_t file_sz):
 Partition::~Partition()
 {}
 
-std::vector<FileInfo> Partition::partition(FILE *fpi, const char *dir)
+std::vector<FileInfo> Partition::operator() (FILE *fpi, const char *dir)
 {
 	Input in(fpi, BUF_SZ);
 

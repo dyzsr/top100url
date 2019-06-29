@@ -8,9 +8,9 @@ class Output {
 		Output(FILE *f, size_t buf_sz);
 		~Output();
 
-		void putdb(const size_t v);
+		void putdb(size_t v);
 		void putsb(const char *s);
-		void putd(const size_t v);
+		void putd(size_t v);
 		void puts(const char *s);
 		void flush();
 

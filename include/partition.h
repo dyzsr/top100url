@@ -14,7 +14,7 @@ class Partition {
 		Partition(size_t file_sz);
 		~Partition();
 
-		std::vector<FileInfo> partition(FILE *fpi, const char *dir);
+		std::vector<FileInfo> operator() (FILE *fpi, const char *dir);
 
 	private:
 		size_t FILE_SZ;

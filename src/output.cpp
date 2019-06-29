@@ -1,5 +1,6 @@
 #include "../include/output.h"
 
+#include <string>
 #include <cstring>
 #include <cassert>
 #include <cctype>
@@ -19,7 +20,7 @@ Output::~Output()
 	delete[] buf;
 }
 
-void Output::putdb(const size_t v)
+void Output::putdb(size_t v)
 {
 	char *p = (char *)(&v);
 	for (size_t i = 0; i < sizeof(size_t); i++) {
@@ -35,8 +36,19 @@ void Output::putsb(const char *s)
 	putc(0);
 }
 
-void Output::putd(const size_t v)
+void Output::putd(size_t v)
 {
+	std::string str;
+	while (v > 0) {
+		str += (char)('0' + v % 10);
+		v /= 10;
+	}
+	if (str.empty())
+		str += '0';
+	for (size_t i = str.size(); i > 0; i--) {
+		putc(str[i - 1]);
+	}
+	putc('\n');
 }
 
 void Output::puts(const char *s)
