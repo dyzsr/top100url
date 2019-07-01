@@ -12,6 +12,8 @@
 4. 用归并排序合并每个处理过的小文件，迭代执行直到只剩下一个文件
 5. 在最终剩下的文件中找出现次数最多的100个url
 
+如果url重复较多，这种方法的效率应该会比较好；如果url重复较少，这种方法可能会冗余存储，造成一定的空间浪费。
+
 ## 格式
 
 假设输入文件中的url全部使用utf-8编码，即所有的url均已转换为ascii码的形式，不存在ascii码以外的字符。
@@ -32,30 +34,30 @@ url之间以空白字符分隔。
 
 **utils.h**
 
-定义了两个结构体FileInfo和UrlCnt。
-FileInfo保存文件名和输出到文件的字节数。
-UrlCnt保存一个url的hash值，统计值count和url字符串。
+定义了两个结构体`FileInfo`和`UrlCnt`。
+`FileInfo`保存文件名和输出到文件的字节数。
+`UrlCnt`保存一个url的hash值，统计值count和url字符串。
 
 **input.h/input.cpp**
 
-定义了带缓冲区的输入类Input。可以读取文本或二进制文件。
+定义了带缓冲区的输入类`Input`。可以读取文本或二进制文件。
 
 **output.h/output.cpp**
 
-定义了带缓冲的输出类Output。可以向文本或二进制文件写入。
+定义了带缓冲的输出类`Output`。可以向文本或二进制文件写入。
 
 **partition.h/partition.cpp**
 
-定义了对输入文件分块的类Partition。利用Partiition将输入文件分成一个个小文件。
+定义了对输入文件分块的类`Partition`。利用`Partiition`将输入文件分成一个个小文件。
 
 **reduce.h/reduce.cpp**
 
-定义了类Reduce，实现了对小文件的mapreduce操作。
+定义了类`Reduce`，实现了对小文件的mapreduce操作。
 当前程序使用4个线程并行对4个文件执行reduce操作。
 
 **merge.h/merge.cpp**
 
-定义了类Merge。利用归并排序合并小文件。形成总体的统计数据。
+定义了类`Merge`。利用归并排序合并小文件。形成总体的统计数据。
 当前程序使用8个线程并行执行merge操作。
 
 **main.cpp**
