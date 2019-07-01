@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <cstddef>
+
 extern size_t MAX_URL_SZ;
 extern size_t MAX_FNAME_SZ;
 

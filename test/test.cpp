@@ -192,7 +192,6 @@ void test_merge()
 		"_test/iter-00-00007",
 	};
 
-	std::vector<FILE *> fs(N);
 	std::vector<Input *> ins(N);
 
 	for (size_t i = 0; i < N; i++) {
@@ -202,7 +201,7 @@ void test_merge()
 	Output out("_test/iter-01-00000", "wb", 1 << 24);
 
 	Merge merge;
-	auto res = merge(ins, &out);
+	auto res = merge(ins, out);
 	fprintf(stderr, "Merged, total input = %zu, total output = %zu.\n",
 			res.first, res.second);
 
