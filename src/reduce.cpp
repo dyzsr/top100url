@@ -2,6 +2,7 @@
 #include "../include/input.h"
 #include "../include/output.h"
 #include "../include/utils.h"
+#include "../include/config.h"
 
 #include <algorithm>
 
@@ -10,9 +11,9 @@ Reduce::Reduce()
 
 std::pair<size_t, size_t> Reduce::operator() (Input *in, Output *out)
 {
-	char *str = new char[65536];
+	char *str = new char[MAX_URL_SZ + 1];
 	for (;;) {
-		size_t n = in->getsb(str, 65535);
+		size_t n = in->getsb(str, MAX_URL_SZ);
 		if (n == 0)
 			break;
 

@@ -2,68 +2,36 @@
 #include "../include/input.h"
 #include "../include/output.h"
 #include "../include/utils.h"
+#include "../include/config.h"
 
 #include <cstdlib>
 #include <cassert>
 
-Partition::Partition(size_t file_sz):
-	FILE_SZ(file_sz), BUF_SZ(1 << 26)
+Partition::Partition(size_t _file_sz):
+	file_sz(_file_sz)
 {
-	assert(FILE_SZ > 0);
+	assert(file_sz > 0);
 }
 
 Partition::~Partition()
 {}
 
-std::vector<FileInfo> Partition::operator() (FILE *fpi, const char *dir)
-{
-	Input in(fpi, BUF_SZ);
-
-	std::vector<FileInfo> res;
-	char fname[40];
-	
-	bool eof = false;
-	while (!eof) {
-		// set filename
-		size_t n = res.size();
-
-		sprintf(fname, "%s/part-%05zu", dir, n);
-
-		// open tmp file
-		FILE *fpo = fopen(fname, "wb");
-		size_t sz;
-		assert(fpo != NULL);
-		{
-			Output out(fpo, BUF_SZ);
-			// read and partition input file
-			eof = read_part(&in, &out, &sz);
-		}
-		fclose(fpo);
-		
-		res.emplace_back(fname, sz);
-	}
-
-	return res;
-}
-
-bool Partition::read_part(Input *in, Output *out, size_t *sz)
+std::pair<size_t, bool> Partition::operator() (Input &in, Output &out)
 {
 	size_t cnt = 0;
 	bool eof = false;
 	
-	char *str = new char[65536];
-	while (cnt < FILE_SZ) {
-		size_t n = in->gets(str, 65536);
+	char *str = new char[MAX_URL_SZ + 1];
+	while (cnt < file_sz) {
+		size_t n = in.gets(str, MAX_URL_SZ);
 		if (n == 0) { // reach EOF
 			eof = true;
 			break;
 		}
-		out->putsb(str);
+		out.putsb(str);
 		cnt += n + 1; // add n to size
 	}
 	delete[] str;
 
-	out->flush();	// clear the buffer
-	*sz = cnt;
-	return eof;
+	return std::make_pair(cnt, eof);
 }

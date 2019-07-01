@@ -4,19 +4,33 @@
 #include <cassert>
 #include <cctype>
 
-Input::Input(FILE *f, size_t buf_sz):
-	fpi(f), BUF_SZ(buf_sz), sz(0), ptr(0)
+Input::Input(FILE *f, const char *mode, size_t _buf_sz):
+	buf_sz(_buf_sz), sz(0), ptr(0)
 {
+	fpi = freopen(NULL, mode, f);
 	assert(fpi != NULL);
-	assert(BUF_SZ > 0);
+	assert(buf_sz > 0);
 
-	buf = new char[BUF_SZ];
+	buf = new char[buf_sz];
 	assert(buf != NULL);
-	memset(buf, -1, BUF_SZ * sizeof(char));
+	memset(buf, -1, buf_sz * sizeof(char));
+}
+
+Input::Input(const char *filename, const char *mode, size_t _buf_sz):
+	buf_sz(_buf_sz), sz(0), ptr(0)
+{
+	fpi = fopen(filename, mode);
+	assert(fpi != NULL);
+	assert(buf_sz > 0);
+
+	buf = new char[buf_sz];
+	assert(buf != NULL);
+	memset(buf, -1, buf_sz * sizeof(char));
 }
 
 Input::~Input()
 {
+	fclose(fpi);
 	delete[] buf;
 }
 
@@ -78,7 +92,7 @@ size_t Input::gets(char *dest, size_t n)
 inline int Input::getc()
 {
 	if (ptr >= sz) {
-		sz = fread(buf, sizeof(char), BUF_SZ, fpi);
+		sz = fread(buf, sizeof(char), buf_sz, fpi);
 		if (sz == 0)
 			return EOF;
 		ptr = 0;

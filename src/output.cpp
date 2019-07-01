@@ -5,18 +5,32 @@
 #include <cassert>
 #include <cctype>
 
-Output::Output(FILE *f, size_t buf_sz):
-	fpo(f), BUF_SZ(buf_sz), ptr(0)
+Output::Output(FILE *f, const char *mode, size_t _buf_sz):
+	buf_sz(_buf_sz), ptr(0)
 {
-	assert(BUF_SZ > 0);
+	fpo = freopen(NULL, mode, f);
 	assert(fpo != NULL);
+	assert(buf_sz > 0);
 
-	buf = new char[BUF_SZ];
+	buf = new char[buf_sz];
+	assert(buf != NULL);
+}
+
+Output::Output(const char *filename, const char *mode, size_t _buf_sz):
+	buf_sz(_buf_sz), ptr(0)
+{
+	fpo = fopen(filename, mode);
+	assert(fpo != NULL);
+	assert(buf_sz > 0);
+
+	buf = new char[buf_sz];
 	assert(buf != NULL);
 }
 
 Output::~Output()
 {
+	flush();
+	fclose(fpo);
 	delete[] buf;
 }
 
@@ -63,8 +77,8 @@ inline void Output::putc(char c)
 {
 	buf[ptr] = c;
 	ptr++;
-	if (ptr >= BUF_SZ) {
-		fwrite(buf, sizeof(char), BUF_SZ, fpo);
+	if (ptr >= buf_sz) {
+		fwrite(buf, sizeof(char), buf_sz, fpo);
 		ptr = 0;
 	}
 }

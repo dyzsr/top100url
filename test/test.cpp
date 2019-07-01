@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 void test_input()
 {
 	size_t buf_sz = (1 << 20);
-	Input in(stdin, buf_sz);
+	Input in(stdin, "w", buf_sz);
 
 	const size_t N = 256;
 	char s[N];
@@ -70,10 +70,9 @@ void test_input()
 
 void test_inputb()
 {
-	freopen(NULL, "rb", stdin);
-
+//	freopen(NULL, "rb", stdin);
 	size_t buf_sz = (1 << 20);
-	Input in(stdin, buf_sz);
+	Input in(stdin, "rb", buf_sz);
 
 	const size_t N = 256;
 	char s[N];
@@ -90,7 +89,7 @@ void test_inputb()
 void test_output()
 {
 	size_t buf_sz = (1 << 3);
-	Output out(stdout, buf_sz);
+	Output out(stdout, "w", buf_sz);
 
 	const size_t N = 65536;
 	char *s = new char[N];
@@ -101,16 +100,14 @@ void test_output()
 			s[len - 1] = 0;
 		out.puts(s);
 	}
-	out.flush();
+//	out.flush();
 	delete[] s;
 }
 
 void test_outputb()
 {
-	freopen(NULL, "wb", stdout);
-
 	size_t buf_sz = (1 << 3);
-	Output out(stdout, buf_sz);
+	Output out(stdout, "wb", buf_sz);
 
 	const size_t N = 65536;
 	char *s = new char[N];
@@ -121,44 +118,45 @@ void test_outputb()
 			s[len - 1] = 0;
 		out.putsb(s);
 	}
-	out.flush();
+//	out.flush();
 	delete[] s;
 }
 
 void test_partition()
 {
-	freopen(NULL, "wb", stdout);
-
-	const char *dir = "._test_partition";
 	char cmd[100];
 
 	// create dir
-	strcpy(cmd, "mkdir -p "); strcat(cmd, dir); system(cmd);
+	sprintf(cmd, "mkdir -p _test"); system(cmd);
 	// check
-	strcpy(cmd, "ls -a | grep "); strcat(cmd, dir); system(cmd);
+	sprintf(cmd, "ls -a | grep _test"); system(cmd);
 
 	size_t file_sz = (1 << 26);
 	Partition partition(file_sz);
-	std::vector<FileInfo> files = partition(stdin, dir);
 
-	printf("number of files: %zu\n", files.size());
-	for (auto &info: files) {
-		printf("file: %s, size: %zuM\n",
-				info.filename.c_str(), info.size >> 20);
+	Input in(stdin, "r", 1 << 24);
+	char fname[40];
+	std::vector<FileInfo> files;
+	for (size_t i = 0;; i++) {
+		sprintf(fname, "_test/part-%05zu", i);
+		Output out(fname, "wb", 1 << 24);
+		std::pair<size_t, bool> res = partition(in, out);
+		files.emplace_back(fname, res.first);
+		if (res.second)
+			break;
 	}
 
-	// remove dir
-//	strcpy(cmd, "rm -rd "); strcat(cmd, dir); system(cmd);
-	// check
-//	strcpy(cmd, "ls -a | grep "); strcat(cmd, dir); system(cmd);
+	printf("number of files: %zu\n", files.size());
+	for (auto &file: files) {
+		printf("file: %s, size: %zuM\n",
+				file.filename.c_str(), file.size >> 20);
+	}
 }
 
 void test_reduce()
 {
-	freopen(NULL, "rb", stdin);
-	freopen(NULL, "wb", stdout);
-	Input in(stdin, 1 << 24);
-	Output out(stdout, 1 << 24);
+	Input in(stdin, "rb", 1 << 24);
+	Output out(stdout, "wb", 1 << 24);
 	Reduce reduce;
 	auto res = reduce(&in, &out);
 	fprintf(stderr, "Reduced, total input = %zu, total output = %zu.\n",
@@ -167,8 +165,7 @@ void test_reduce()
 
 void view_urlcnt()
 {
-	freopen(NULL, "rb", stdin);
-	Input in(stdin, 1 << 24);
+	Input in(stdin, "rb", 1 << 24);
 	char *str = new char [65536];
 	for (size_t i = 0; i < 70; i++) {
 		size_t hash, cnt;
@@ -185,37 +182,31 @@ void test_merge()
 {
 	const int N = 8;
 	const char *fnames[N] = {
-		"._test_merge/iter-00-00000",
-		"._test_merge/iter-00-00001",
-		"._test_merge/iter-00-00002",
-		"._test_merge/iter-00-00003",
-		"._test_merge/iter-00-00004",
-		"._test_merge/iter-00-00005",
-		"._test_merge/iter-00-00006",
-		"._test_merge/iter-00-00007",
+		"_test/iter-00-00000",
+		"_test/iter-00-00001",
+		"_test/iter-00-00002",
+		"_test/iter-00-00003",
+		"_test/iter-00-00004",
+		"_test/iter-00-00005",
+		"_test/iter-00-00006",
+		"_test/iter-00-00007",
 	};
 
 	std::vector<FILE *> fs(N);
 	std::vector<Input *> ins(N);
 
 	for (size_t i = 0; i < N; i++) {
-		fs[i] = fopen(fnames[i], "rb");
-		ins[i] = new Input(fs[i], 1 << 24);
+		ins[i] = new Input(fnames[i], "rb", 1 << 24);
 	}
 
-	FILE *fpo = fopen("._test_merge/iter-01-00000", "wb");
-	{
-		Output out(fpo, 1 << 24);
-		
-		Merge merge;
-		auto res = merge(ins, &out);
-		fprintf(stderr, "Merged, total input = %zu, total output = %zu.\n",
-				res.first, res.second);
-	}
+	Output out("_test/iter-01-00000", "wb", 1 << 24);
 
-	fclose(fpo);
+	Merge merge;
+	auto res = merge(ins, &out);
+	fprintf(stderr, "Merged, total input = %zu, total output = %zu.\n",
+			res.first, res.second);
+
 	for (size_t i = 0; i < N; i++) {
 		delete ins[i];
-		fclose(fs[i]);
 	}
 }

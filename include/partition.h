@@ -1,9 +1,7 @@
 #ifndef PARTITION_H
 #define PARTITION_H
 
-#include <cstdio>
-#include <vector>
-#include <string>
+#include <functional>
 
 class Input;
 class Output;
@@ -11,16 +9,15 @@ struct FileInfo;
 
 class Partition {
 	public:
-		Partition(size_t file_sz);
+		Partition(size_t _file_sz);
 		~Partition();
 
-		std::vector<FileInfo> operator() (FILE *fpi, const char *dir);
+		std::pair<size_t, bool> operator() (Input &in, Output &out);
 
 	private:
-		size_t FILE_SZ;
-		size_t BUF_SZ;
+		size_t file_sz;
 
-		bool read_part(Input *in, Output *out, size_t *sz);
+		bool read_part(Input &in, Output &out, size_t *sz);
 };
 
 #endif

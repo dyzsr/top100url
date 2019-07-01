@@ -5,7 +5,8 @@
 
 class Input {
 	public:
-		Input(FILE *f, size_t buf_sz);
+		Input(FILE *f, const char *mode, size_t _buf_sz);
+		Input(const char *filename, const char *flags, size_t _buf_sz);
 		~Input();
 
 		size_t getdb(size_t *dest);
@@ -17,7 +18,7 @@ class Input {
 		FILE *fpi;
 		char *buf;
 
-		size_t BUF_SZ;
+		size_t buf_sz;
 		size_t sz;
 		size_t ptr;
 

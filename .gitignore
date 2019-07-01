@@ -1,9 +1,8 @@
 bin/
 resources/
-._*/
-
-urls.txt
-result.txt
+results/
+_test*/
+_tmp*/
 
 # vim swap
 *.swp

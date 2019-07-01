@@ -2,6 +2,7 @@
 #include "../include/utils.h"
 #include "../include/input.h"
 #include "../include/output.h"
+#include "../include/config.h"
 
 #include <queue>
 
@@ -17,27 +18,20 @@ struct CMP {
 Merge::Merge()
 {}
 
-std::pair<size_t, size_t> Merge::operator() (const std::vector<Input *> &ins, Output *out)
+std::pair<size_t, size_t> Merge::operator() (std::vector<Input *> &ins, Output &out)
 {
-//	fprintf(stderr, "zzz\n");
-
 	/*** Merge sort ***/
 	std::priority_queue<Item, std::vector<Item>, CMP> pq;
 
 	std::vector<char> iseof(ins.size(), 0);
 
-//	fprintf(stderr, "qqq\n");
-
 	for (size_t i = 0; i < ins.size(); i++) {
 		UrlCnt *urlcnt = new UrlCnt;
-		iseof[i] = getUrlCnt(urlcnt, ins[i]);
+		iseof[i] = getUrlCnt(urlcnt, *ins[i]);
 		if (!iseof[i]) {
 			pq.push(std::make_pair(urlcnt, i));
-//			fprintf(stderr, "%zu %zu %s\n", urlcnt->hash, urlcnt->cnt, urlcnt->url.c_str());
 		}
 	}
-
-//	fprintf(stderr, "aaa\n");
 
 	size_t tot_in = 0;
 	size_t tot_out = 0;
@@ -66,38 +60,34 @@ std::pair<size_t, size_t> Merge::operator() (const std::vector<Input *> &ins, Ou
 		if (!iseof[j]) {
 			// get a new item from files
 			urlcnt = new UrlCnt;
-			iseof[j] = getUrlCnt(urlcnt, ins[j]);
+			iseof[j] = getUrlCnt(urlcnt, *ins[j]);
 			if (!iseof[j])
 				pq.push(std::make_pair(urlcnt, j));
 		}
 	}
-
-//	fprintf(stderr, "bbb\n");
 
 	if (least != nullptr) {
 		putAndDelete(least, out);
 		tot_out++;
 	}
 
-	out->flush();
-
 	return std::make_pair(tot_in, tot_out);
 }
 
-bool Merge::getUrlCnt(UrlCnt *urlcnt, Input *in)
+bool Merge::getUrlCnt(UrlCnt *urlcnt, Input &in)
 {
 	size_t hash, cnt, n;
 
-	n = in->getdb(&hash);
+	n = in.getdb(&hash);
 	if (n < sizeof(size_t)) // EOF
 		return true;
 
-	n = in->getdb(&cnt);
+	n = in.getdb(&cnt);
 	if (n < sizeof(size_t))
 		return true;
 
-	char *str = new char[65536];
-	n = in->getsb(str, 65535);
+	char *str = new char[MAX_URL_SZ + 1];
+	n = in.getsb(str, MAX_URL_SZ);
 	if (n == 0)
 		return true;
 
@@ -109,10 +99,10 @@ bool Merge::getUrlCnt(UrlCnt *urlcnt, Input *in)
 	return false;
 }
 
-void Merge::putAndDelete(UrlCnt *urlcnt, Output *out)
+void Merge::putAndDelete(UrlCnt *urlcnt, Output &out)
 {
-	out->putdb(urlcnt->hash);
-	out->putdb(urlcnt->cnt);
-	out->putsb(urlcnt->url.c_str());
+	out.putdb(urlcnt->hash);
+	out.putdb(urlcnt->cnt);
+	out.putsb(urlcnt->url.c_str());
 	delete urlcnt;
 }
