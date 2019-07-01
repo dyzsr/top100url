@@ -21,7 +21,7 @@ url之间以空白字符分隔。
 
 ## 代码
 
-### src
+### src/
 
 **config.h**
 
@@ -61,7 +61,7 @@ UrlCnt保存一个url的hash值，统计值count和url字符串。
 
 使用了openmp进行多线程加速，默认设置为8线程。
 
-### test
+### test/
 
 **test.cpp**
 
@@ -105,7 +105,7 @@ g++ -o bin/gen_urls test/gen_urls.cpp src/output.cpp -O3 -std=c++14 -Wall
 ### 运行top100url
 
 ```
-bin/top100url _inputfile_ _outputfile_
+bin/top100url {inputfile} {outputfile}
 ```
 
 ### 运行测试程序
@@ -113,7 +113,7 @@ bin/top100url _inputfile_ _outputfile_
 测试分块（所有测试的输出文件都在_test目录下）
 
 ```
-bin/test partition < _inputfile_
+bin/test partition < {inputfile}
 ```
 
 测试reduce
