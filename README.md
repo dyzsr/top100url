@@ -19,20 +19,21 @@ url之间以空白字符分隔。
 
 输出的结果文件包含url和其对应的统计次数，全部以换行符分隔。
 
+因为主流的浏览器大多将url长度限制为65536，我在程序中假定url最大长度为65536。
+
 ## 代码
 
 ### src/
 
-**config.h**
+**config.h/config.cpp**
 
 保存程序中一些参数的配置信息。
+因为时间较少，我暂时没有添加动态修改参数的功能。
 
 **utils.h**
 
 定义了两个结构体FileInfo和UrlCnt。
-
 FileInfo保存文件名和输出到文件的字节数。
-
 UrlCnt保存一个url的hash值，统计值count和url字符串。
 
 **input.h/input.cpp**
@@ -50,16 +51,16 @@ UrlCnt保存一个url的hash值，统计值count和url字符串。
 **reduce.h/reduce.cpp**
 
 定义了类Reduce，实现了对小文件的mapreduce操作。
+当前程序使用4个线程并行对4个文件执行reduce操作。
 
 **merge.h/merge.cpp**
 
 定义了类Merge。利用归并排序合并小文件。形成总体的统计数据。
+当前程序使用8个线程并行执行merge操作。
 
 **main.cpp**
 
 实现了top100url的整个流程，以及最后筛选前100url的操作。
-
-使用了openmp进行多线程加速，默认设置为8线程。
 
 ### test/
 
@@ -69,13 +70,13 @@ UrlCnt保存一个url的hash值，统计值count和url字符串。
 
 **gen_urls.cpp**
 
-生成样例程序（使用boost的随机数库）
+生成样例程序
 
 ## 运行
 
 ### 编译
 
-编译top100url程序
+编译top100url程序，程序使用了openmp
 
 ```
 g++ \
@@ -142,3 +143,11 @@ bin/test urlcnt < _test/iter-00-00003
 bin/gen_urls 100000000 > resources/urls0.txt
 ```
 
+## 结果
+
+我通过下列命令执行了多次测试，测试结果均保持一致，内存最大用量可控制在800MB左右。
+
+```
+bin/gen_urls 100000000 > resources/urls0.txt
+bin/top100url resources/urls0.txt results/result0.txt
+```
